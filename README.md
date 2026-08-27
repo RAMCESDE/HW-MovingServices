@@ -18,3 +18,11 @@ lentitud en la respuesta comercial y falta de visibilidad del servicio para el c
 + **Falta de Trazabilidad y Seguridad:** En el proceso manual no existe un mecanismo para que el cliente rastree su carga en tiempo real ni para que conozca de antemano la identificación del personal asignado por motivos de seguridad.
 
 + **Proceso de Cobro Informal y Tardío:** El cobro se realiza en su totalidad únicamente al finalizar el servicio, sin exigencia de anticipos para asegurar la reserva ni integración de métodos de pago digitales automáticos o facturación en línea. 
+
+## Diagrama de Casos de Uso
+
+![Casos de Uso](./docs/Diagrama_Casos_De_Uso.jpeg)
+
+## Diagrama de Clases
+
+![Diagrama de Clases](./docs/Diagrama_de_Clases.jpeg)

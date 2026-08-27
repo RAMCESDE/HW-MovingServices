@@ -1,0 +1,62 @@
+#+title: Hw Acarreos
+
+
+* Proceso Actual (Sin App)
+
++ *Atención y Solicitud:* El cliente contacta a la empresa por teléfono/móvil. La empresa solicita manualmente los detalles del servicio (direcciones, tipo de carga, pisos, etc.).
+
++ *Cotización:* La empresa calcula el costo manualmente e informa al cliente.
+
++ *Si el cliente rechaza:* El proceso finaliza (oportunidad descartada).
+
++ *Si el cliente acepta:* Se procede al agendamiento.
+
++ *Gestión Logística:* La empresa asigna manualmente vehículo, conductor y ayudantes según disponibilidad.
+
++ *Ejecución:* El equipo asiste en la fecha y hora acordada y presta el servicio de acarreo.
+
++ *Cierre:* Se realiza el cobro total del servicio al finalizar.
+
+* Proceso Optimizado (Con App)
+
+Para mejorar la claridad, el flujo de la aplicación se divide en 5 etapas secuenciales:
+
+** *Fase 1:* Solicitud y Cotización Automática
+
++ *Cliente:* Ingresa a la App y selecciona "Solicitar Servicio".
++ *Cliente:* Completa el formulario de levantamiento de información (origen, destino, tipo/tamaño de objetos, número de pisos, ascensores, necesidad de cargadores/ayudantes).
++ *App:* Procesa la información mediante el algoritmo de precios y genera una cotización estimada/instantánea.
+
+** *Fase 2:* Reserva y Agendamiento
+
++ *Cliente:* Evalúa la cotización.
++ *Si no acepta:* Se permite guardar el borrador o cancelar.
++ *Si acepta:* Pasa al módulo de agendamiento.
++ *Cliente:* Selecciona fecha, hora y realiza el pago del anticipo (mínimo 10%) a través de la pasarela de pagos.
++ *App:* Emite un comprobante provisional de reserva e ingresa el servicio al panel de control (dashboard) logístico.
+
+** *Fase 3:* Asignación Logística y Confirmación
+
++ *Administrador / Operador Logístico:* Revisa la reserva en el panel, valida la factibilidad del servicio y asigna:
+
+  * Vehículo (según capacidad requerida).
+  * Conductor.
+  * Ayudantes/cargadores (si aplica).
+
++ *App (Notificación Logística):* Transmite los detalles de la ruta y carga al conductor y ayudantes asignados mediante la App del Conductor, WhatsApp/SMS o Email.
+
++ *App (Notificación al Cliente):* Envía al cliente la confirmación definitiva del servicio, incluyendo perfil del conductor, datos del vehículo (placa/modelo) e identificación del personal asignado por seguridad.
+
+** *Fase 4:* Ejecución del Servicio
+
++ *Conductor:* Notifica el inicio del desplazamiento, llegada al punto de origen y fin del recorrido a través de la App.
+
++ *Cliente:* Rastrea el estado/ubicación del servicio en tiempo real.
+
++ *Equipo:* Realiza el proceso de carga, transporte y descarga de los bienes.
+
+** *Fase 5:* Liquidación y Post-servicio
+
++ *Cliente:* Realiza el pago del saldo restante (efectivo, tarjeta o transferencia en la App) al verificar la entrega conforme.
+
++ *App:* Registra el pago, genera la factura/recibo digital y habilita la calificación del servicio (revisión de calidad para el conductor/ayudantes).
