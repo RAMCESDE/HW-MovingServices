@@ -1,6 +1,6 @@
 package app.domain;
 
-public class Cliente extends Person {
+public class Cliente extends Persona {
     private String direccion;
 
     public Cliente() {}

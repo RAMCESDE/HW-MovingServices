@@ -1,13 +1,13 @@
 package app.domain;
 
-public class Person {
+public class Persona {
     private String nombre;
     private String cedula;
     private String telefono;
     private String email;
-    public Person() {}
+    public Persona() {}
 
-    public Person(String nombre, String cedula, String telefono, String email) {
+    public Persona(String nombre, String cedula, String telefono, String email) {
         this.nombre = nombre;
         this.cedula = cedula;
         this.telefono = telefono;
