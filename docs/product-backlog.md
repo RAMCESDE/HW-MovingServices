@@ -1,23 +1,26 @@
-# Product Backlog
-## Epica 1: Gestion de Usuarios administrador
-### Feature: 1.1 Registro
-US-01: Como usuario quiero registrarme para poder utilizar la plataforma. 
-US-02: Como usuario quiero recuperar mi contraseña para poder acceder nuevamente
-### Feature: 1.2 Inicio de Sesión 
-US-03: Como usuario quiero iniciar sesión para acceder a mi cuenta. 
-## Epica 2: Gestion administrativa 
-### Feature: 2.1 Gestion de Vehiculos
-US-04: Como ususario administrador quiero registrar los vehiculos de la empresa.
-US-05: Como usuario administrador quiero asisnar conductores a los vehiculos. 
-US-06: Como usuario administrador quiero renovar los documentos de los vehiculos registrados. 
-US-07: Como usuario administrador quiero registrar los pico y placa que tengan mis vehiculs.
-### Feature: 2.2 Gstion de empledos
-US-08: Como usuario administrador quiero registrar los empleados de la empreas.
-US-09: Como usuario administrador quiero poder remover un empleado.
-## Epica 3: Gestion de flota 
-### Feature: 3.1 Programar 
-US-10: Como usuario administrador quiero programar mudanzas asignando vehiculo y fecha.
-## Epica 4: Modulo de Servicios
-### Feature: 4.1 Servicios
-US-11 Como cliente quiero poder solicitar un sevicio de mudanza y obtener una cotización
-
+# Épica 1: Autenticación y Gestión de Cuentas
+## Feature 1.1: Registro e Identificación
+US-01: Como cliente, quiero registrarme con correo y contraseña para crear mi cuenta en la plataforma.
+US-02: Como usuario, quiero recuperar mi contraseña mediante un enlace al correo para recuperar el acceso a mi cuenta.
+## Feature 1.2: Acceso y Perfil
+US-03: Como usuario, quiero iniciar sesión para acceder a las funciones del sistema según mi rol (Cliente / Admin).
+US-04: Como cliente, quiero editar mi perfil (teléfono, dirección) para mantener mis datos actualizados.
+# Épica 2: Gestión de Flota y Empleados (Módulo Admin)
+## Feature 2.1: Gestión de Vehículos
+US-05: Como administrador, quiero registrar vehículos (placa, capacidad, modelo) para conocer la disponibilidad de la flota.US-06: Como administrador, quiero asignar conductores a un vehículo para definir los responsables de las rutas.
+US-07: Como administrador, quiero registrar y alertar el vencimiento de documentos (SOAT, tecno-mecánica) para mantener los vehículos al día.
+US-08: Como administrador, quiero parametrizar las restricciones de Pico y Placa por vehículo para evitar programar viajes en días no permitidos.
+# Feature 2.2: Gestión de Personal
+US-09: Como administrador, quiero registrar empleados (conductores, auxiliares de carga) con sus datos de contacto y rol.
+US-10: Como administrador, quiero desactivar/remover un empleado para restringir su acceso y no asignarlo a nuevos servicios.
+# Épica 3: Solicitud y Cotización de Servicios (Módulo Cliente)## Feature 3.1: Cotización y Reserva
+US-11: Como cliente, quiero solicitar una cotización ingresando origen, destino, fecha y volumen/lista de enseres para conocer el precio estimado.
+US-12: Como cliente, quiero aceptar o rechazar la cotización recibida para confirmar el servicio de mudanza.
+US-13: Como cliente, quiero seleccionar un método de pago (efectivo, tarjeta, transferencia) para concretar la reserva.
+# Épica 4: Programación y Operación de Mudanzas
+# Feature 4.1: Asignación y Despacho
+US-14: Como administrador, quiero programar un servicio confirmado asignando fecha, vehículo, conductor y auxiliares de carga.
+US-15: Como administrador, quiero visualizar un calendario/agenda de mudanzas programadas para evitar traslapes de servicios.
+# Feature 4.2: Seguimiento y Finalización
+US-16: Como cliente, quiero ver el estado en tiempo real de mi mudanza (Pendiente, En Trayecto, Finalizada) para tener tranquilidad del proceso.
+US-17: Como cliente, quiero calificar el servicio y al personal al finalizar la mudanza para retroalimentar la calidad de la empresa.
