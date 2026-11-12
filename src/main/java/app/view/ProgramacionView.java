@@ -10,6 +10,8 @@ import app.service.inputports.dto.ProgramacionServicio;
 import app.service.inputports.dto.RecursosDisponibles;
 import app.view.helpers.EntradaConsola;
 import app.view.helpers.Formato;
+import app.view.helpers.Pantalla;
+import app.view.helpers.Tabla;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -26,27 +28,33 @@ public class ProgramacionView {
 
     public void programar(Sesion sesion) {
         List<Reserva> pendientes = servicio.listarPorProgramar(sesion);
+        Pantalla.subtitulo("Reservas por programar");
         if (pendientes.isEmpty()) {
-            System.out.println("No hay reservas por programar.");
+            Pantalla.info("No hay reservas por programar.");
             return;
         }
+        Tabla porProgramar = new Tabla("Reserva", "Solicitado para", "Duración");
         for (Reserva r : pendientes) {
-            System.out.println(r.getIdReserva() + " | Solicitado para " + Formato.fechaHora(r.getFechaServicio())
-                    + " | Duración " + r.getDuracionMinutos() + " min");
+            porProgramar.fila(r.getIdReserva(), Formato.fechaHora(r.getFechaServicio()), r.getDuracionMinutos() + " min");
         }
+        porProgramar.imprimir("");
+        System.out.println();
         String id = EntradaConsola.texto("Id de la reserva");
         LocalDateTime fecha = EntradaConsola.fechaHora("Fecha y hora definitiva");
         RecursosDisponibles recursos = servicio.consultarRecursos(sesion, id, fecha);
 
-        System.out.println("Vehículos disponibles:");
+        Pantalla.subtitulo("Vehículos disponibles");
+        Tabla vehiculos = new Tabla("Placa", "Tipo", "Volumen", "Conductores habituales");
         for (Vehiculo v : recursos.vehiculos()) {
-            System.out.println("  " + v.getPlaca() + " | " + v.getTipo().getEtiqueta() + " | " + v.getCapacidadVolumenM3()
-                    + " m³ | Conductores habituales: " + v.getIdsConductores());
+            vehiculos.fila(v.getPlaca(), v.getTipo().getEtiqueta(), Formato.decimal(v.getCapacidadVolumenM3()) + " m³",
+                    Formato.lista(v.getIdsConductores()));
         }
-        System.out.println("Conductores disponibles:");
-        recursos.conductores().forEach(ProgramacionView::mostrarEmpleado);
-        System.out.println("Auxiliares disponibles (se requieren " + recursos.auxiliaresRequeridos() + "):");
-        recursos.auxiliares().forEach(ProgramacionView::mostrarEmpleado);
+        vehiculos.imprimir("No hay vehículos disponibles.");
+        Pantalla.subtitulo("Conductores disponibles");
+        empleados(recursos.conductores()).imprimir("No hay conductores disponibles.");
+        Pantalla.subtitulo("Auxiliares disponibles (se requieren " + recursos.auxiliaresRequeridos() + ")");
+        empleados(recursos.auxiliares()).imprimir("No hay auxiliares disponibles.");
+        System.out.println();
 
         String placa = EntradaConsola.texto("Placa");
         String conductor = EntradaConsola.texto("Id del conductor");
@@ -55,24 +63,27 @@ public class ProgramacionView {
             auxiliares.add(EntradaConsola.texto("Id del auxiliar " + i));
         }
         Reserva reserva = servicio.programar(sesion, new ProgramacionServicio(id, fecha, placa, conductor, auxiliares));
-        System.out.println("Reserva " + reserva.getIdReserva() + ": " + reserva.getEstado().getEtiqueta());
+        Pantalla.exito("Reserva " + reserva.getIdReserva() + ": " + reserva.getEstado().getEtiqueta());
     }
 
     public void agenda(Sesion sesion) {
+        Pantalla.subtitulo("Agenda de mudanzas");
         LocalDate desde = EntradaConsola.fecha("Desde");
         LocalDate hasta = EntradaConsola.fecha("Hasta");
         List<ItemAgenda> agenda = servicio.consultarAgenda(sesion, desde, hasta);
-        if (agenda.isEmpty()) {
-            System.out.println("No hay mudanzas programadas en ese rango.");
-        }
+        System.out.println();
+        Tabla tabla = new Tabla("Inicio", "Fin", "Reserva", "Placa", "Estado", "Ruta", "Conductor", "Auxiliares");
         for (ItemAgenda i : agenda) {
-            System.out.println(Formato.fechaHora(i.inicio()) + " a " + Formato.fechaHora(i.fin()) + " | " + i.placa()
-                    + " | " + i.estado().getEtiqueta() + " | " + i.origen() + " → " + i.destino() + " | Conductor: "
-                    + i.conductor() + " | Auxiliares: " + i.auxiliares() + " | " + i.idReserva());
+            tabla.fila(Formato.fechaHora(i.inicio()), Formato.fechaHora(i.fin()), i.idReserva(), i.placa(),
+                    i.estado().getEtiqueta(), i.origen() + " → " + i.destino(), i.conductor(),
+                    Formato.lista(i.auxiliares()));
         }
+        tabla.imprimir("No hay mudanzas programadas en ese rango.");
     }
 
-    private static void mostrarEmpleado(Empleado e) {
-        System.out.println("  " + e.getIdEmpleado() + " | " + e.getNombre());
+    private static Tabla empleados(List<Empleado> empleados) {
+        Tabla tabla = new Tabla("Id", "Nombre");
+        empleados.forEach(e -> tabla.fila(e.getIdEmpleado(), e.getNombre()));
+        return tabla;
     }
 }

@@ -4,7 +4,8 @@ import app.domain.Cliente;
 import app.domain.Sesion;
 import app.service.inputports.ClienteServiceInterface;
 import app.view.helpers.EntradaConsola;
-import app.view.helpers.Formato;
+import app.view.helpers.Ficha;
+import app.view.helpers.Pantalla;
 
 public class ClienteView {
 
@@ -19,17 +20,23 @@ public class ClienteView {
     }
 
     public void editarPerfil(Sesion sesion) {
-        System.out.println("Deje el campo vacío para conservar el dato actual");
+        Pantalla.subtitulo("Editar perfil");
+        Pantalla.info("Deje el campo vacío para conservar el dato actual.");
         String nombre = EntradaConsola.textoOpcional("Nombre");
         String telefono = EntradaConsola.textoOpcional("Teléfono");
         String direccion = EntradaConsola.textoOpcional("Dirección");
-        mostrar(servicio.actualizarPerfil(sesion, nombre, telefono, direccion));
-        System.out.println("Perfil actualizado.");
+        Cliente cliente = servicio.actualizarPerfil(sesion, nombre, telefono, direccion);
+        System.out.println();
+        Pantalla.exito("Perfil actualizado.");
+        mostrar(cliente);
     }
 
     private void mostrar(Cliente cliente) {
-        System.out.println("Correo: " + cliente.getEmail() + "\nNombre: " + Formato.texto(cliente.getNombre())
-                + "\nTeléfono: " + Formato.texto(cliente.getTelefono())
-                + "\nDirección: " + Formato.texto(cliente.getDireccion()));
+        new Ficha("Mi perfil")
+                .campo("Correo", cliente.getEmail())
+                .campo("Nombre", cliente.getNombre())
+                .campo("Teléfono", cliente.getTelefono())
+                .campo("Dirección", cliente.getDireccion())
+                .imprimir();
     }
 }

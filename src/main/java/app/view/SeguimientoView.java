@@ -6,7 +6,10 @@ import app.service.inputports.SeguimientoServiceInterface;
 import app.service.inputports.dto.EstadoServicio;
 import app.service.inputports.dto.ServicioAsignado;
 import app.view.helpers.EntradaConsola;
+import app.view.helpers.Ficha;
 import app.view.helpers.Formato;
+import app.view.helpers.Pantalla;
+import app.view.helpers.Tabla;
 
 import java.util.List;
 
@@ -24,13 +27,13 @@ public class SeguimientoView {
 
     public void misServicios(Sesion sesion) {
         List<ServicioAsignado> servicios = servicio.listarMisServicios(sesion);
-        if (servicios.isEmpty()) {
-            System.out.println("No tiene servicios asignados.");
-        }
+        Pantalla.subtitulo("Mis servicios");
+        Tabla tabla = new Tabla("Reserva", "Inicio", "Estado", "Placa", "Ruta");
         for (ServicioAsignado s : servicios) {
-            System.out.println(s.idReserva() + " | " + Formato.fechaHora(s.inicio()) + " | " + s.estado().getEtiqueta()
-                    + " | " + s.placa() + " | " + s.origen() + " → " + s.destino());
+            tabla.fila(s.idReserva(), Formato.fechaHora(s.inicio()), s.estado().getEtiqueta(), s.placa(),
+                    s.origen() + " → " + s.destino());
         }
+        tabla.imprimir("No tiene servicios asignados.");
     }
 
     public void avanzarHito(Sesion sesion) {
@@ -38,11 +41,17 @@ public class SeguimientoView {
     }
 
     private void mostrar(EstadoServicio e) {
-        System.out.println("Servicio " + e.idReserva() + ": " + e.etapa() + " (" + e.detalle().getEtiqueta() + ")"
-                + "\nFecha: " + Formato.fechaHora(e.fechaServicio()) + " | Vehículo: " + Formato.texto(e.placa())
-                + " | Conductor: " + Formato.texto(e.conductor()) + "\nHistorial:");
+        new Ficha("Servicio " + e.idReserva())
+                .campo("Etapa", e.etapa() + " (" + e.detalle().getEtiqueta() + ")")
+                .campo("Fecha", Formato.fechaHora(e.fechaServicio()))
+                .campo("Vehículo", e.placa())
+                .campo("Conductor", e.conductor())
+                .imprimir();
+        Pantalla.subtitulo("Historial");
+        Tabla tabla = new Tabla("Fecha", "Estado");
         for (EventoServicio evento : e.historial()) {
-            System.out.println("  " + Formato.fechaHora(evento.fechaHora()) + " - " + evento.estado().getEtiqueta());
+            tabla.fila(Formato.fechaHora(evento.fechaHora()), evento.estado().getEtiqueta());
         }
+        tabla.imprimir("Sin eventos registrados.");
     }
 }

@@ -25,13 +25,13 @@ public final class EntradaConsola {
             if (valor != null) {
                 return valor;
             }
-            System.out.println("Este dato es obligatorio");
+            Pantalla.error("Este dato es obligatorio");
         }
     }
 
     /** Devuelve null cuando el usuario deja el dato vacío. */
     public static String textoOpcional(String mensaje) {
-        System.out.print(mensaje + ": ");
+        System.out.print(Pantalla.SANGRIA + "› " + mensaje + ": ");
         String valor = SC.nextLine().trim();
         return valor.isEmpty() ? null : valor;
     }
@@ -50,7 +50,7 @@ public final class EntradaConsola {
             if (valor.equals("s") || valor.equals("n")) {
                 return valor.equals("s");
             }
-            System.out.println("Responda s o n");
+            Pantalla.error("Responda s o n");
         }
     }
 
@@ -67,7 +67,7 @@ public final class EntradaConsola {
             try {
                 return LocalDate.parse(valor);
             } catch (DateTimeParseException e) {
-                System.out.println("Use el formato AAAA-MM-DD");
+                Pantalla.error("Use el formato AAAA-MM-DD");
             }
         }
     }
@@ -90,22 +90,32 @@ public final class EntradaConsola {
             try {
                 return new BigDecimal(valor.replace(".", "").replace(",", ""));
             } catch (NumberFormatException e) {
-                System.out.println("Ingrese un valor numérico");
+                Pantalla.error("Ingrese un valor numérico");
             }
         }
     }
 
     public static <T extends Enum<T>> T opcion(String mensaje, T[] opciones, Function<T, String> etiqueta) {
-        System.out.println(mensaje);
+        String[] textos = new String[opciones.length];
         for (int i = 0; i < opciones.length; i++) {
-            System.out.println("  " + (i + 1) + ". " + etiqueta.apply(opciones[i]));
+            textos[i] = etiqueta.apply(opciones[i]);
+        }
+        return opciones[opcion(mensaje, textos) - 1];
+    }
+
+    /** Muestra las opciones numeradas desde 1 y devuelve el número elegido. */
+    public static int opcion(String mensaje, String... opciones) {
+        System.out.println(Pantalla.SANGRIA + mensaje + ":");
+        String formato = "%s    %" + String.valueOf(opciones.length).length() + "d) %s%n";
+        for (int i = 0; i < opciones.length; i++) {
+            System.out.printf(formato, Pantalla.SANGRIA, i + 1, opciones[i]);
         }
         while (true) {
             int elegida = entero("Seleccione");
             if (elegida >= 1 && elegida <= opciones.length) {
-                return opciones[elegida - 1];
+                return elegida;
             }
-            System.out.println("Seleccione una opción válida");
+            Pantalla.error("Seleccione una opción válida");
         }
     }
 
@@ -114,7 +124,7 @@ public final class EntradaConsola {
             try {
                 return conversor.apply(texto(mensaje));
             } catch (NumberFormatException | DateTimeParseException e) {
-                System.out.println(error);
+                Pantalla.error(error);
             }
         }
     }

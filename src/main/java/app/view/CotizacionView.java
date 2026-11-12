@@ -11,7 +11,9 @@ import app.domain.enums.TipoServicio;
 import app.service.inputports.CotizacionServiceInterface;
 import app.service.inputports.dto.SolicitudCotizacion;
 import app.view.helpers.EntradaConsola;
+import app.view.helpers.Ficha;
 import app.view.helpers.Formato;
+import app.view.helpers.Pantalla;
 
 import java.time.LocalDate;
 import java.util.EnumMap;
@@ -27,17 +29,20 @@ public class CotizacionView {
     }
 
     public void solicitar(Sesion sesion) {
+        Pantalla.subtitulo("Nueva cotización");
         TipoServicio tipo = EntradaConsola.opcion("Tipo de servicio", TipoServicio.values(), TipoServicio::getEtiqueta);
         LocalDate fecha = EntradaConsola.fecha("Fecha deseada");
-        System.out.println("--- Origen ---");
+        Pantalla.subtitulo("Origen");
         Ubicacion origen = leerUbicacion();
-        System.out.println("--- Destino ---");
+        Pantalla.subtitulo("Destino");
         Ubicacion destino = leerUbicacion();
         Map<Enser, Integer> enseres = new EnumMap<>(Enser.class);
         double volumen = 0;
+        Pantalla.subtitulo("Carga");
         if (EntradaConsola.siNo("¿Desea ingresar la lista de enseres? (n = indicar el volumen en m³)")) {
+            Pantalla.info("Indique la cantidad de cada enser (0 si no aplica).");
             for (Enser enser : Enser.values()) {
-                int cantidad = EntradaConsola.entero(enser.getEtiqueta() + " (cantidad, 0 si no aplica)");
+                int cantidad = EntradaConsola.entero(enser.getEtiqueta());
                 if (cantidad != 0) {
                     enseres.put(enser, cantidad);
                 }
@@ -56,18 +61,22 @@ public class CotizacionView {
 
     public void listar(Sesion sesion) {
         List<SolicitudServicio> cotizaciones = servicio.listarMisCotizaciones(sesion);
+        Pantalla.subtitulo("Mis cotizaciones");
         if (cotizaciones.isEmpty()) {
-            System.out.println("No tiene cotizaciones.");
+            Pantalla.info("No tiene cotizaciones.");
         }
         cotizaciones.forEach(this::mostrar);
     }
 
     public void retomar(Sesion sesion) {
+        Pantalla.subtitulo("Decidir cotización");
         decidir(sesion, EntradaConsola.texto("Id de la cotización"));
     }
 
     private void decidir(Sesion sesion, String id) {
-        int opcion = EntradaConsola.entero("1. Aceptar  2. Rechazar  3. Guardar borrador  4. Decidir después");
+        System.out.println();
+        int opcion = EntradaConsola.opcion("¿Qué desea hacer con la cotización?", "Aceptar", "Rechazar",
+                "Guardar borrador", "Decidir después");
         SolicitudServicio resultado = switch (opcion) {
             case 1 -> servicio.aceptar(sesion, id);
             case 2 -> servicio.rechazar(sesion, id);
@@ -75,7 +84,7 @@ public class CotizacionView {
             default -> null;
         };
         if (resultado != null) {
-            System.out.println("Cotización " + id + ": " + resultado.getEstado().getEtiqueta());
+            Pantalla.exito("Cotización " + id + ": " + resultado.getEstado().getEtiqueta());
         }
     }
 
@@ -89,15 +98,21 @@ public class CotizacionView {
 
     private void mostrar(SolicitudServicio s) {
         DesgloseCotizacion c = s.getCotizacion();
-        System.out.println("\nCotización " + s.getIdSolicitud() + " | " + s.getEstado().getEtiqueta() + " | "
-                + s.getTipoServicio().getEtiqueta() + " | " + s.getFecha()
-                + "\n" + s.getOrigen().municipio().getEtiqueta() + " → " + s.getDestino().municipio().getEtiqueta()
-                + " | " + c.distanciaKm() + " km aprox. | " + String.format("%.2f", s.getVolumenM3()) + " m³"
-                + " | Vehículo sugerido: " + c.vehiculoSugerido().getEtiqueta()
-                + "\n  Tarifa base:        " + Formato.pesos(c.tarifaBase())
-                + "\n  Recargo distancia:  " + Formato.pesos(c.recargoDistancia())
-                + "\n  Pisos/complejidad:  " + Formato.pesos(c.recargoPisos())
-                + "\n  Personal adicional: " + Formato.pesos(c.recargoPersonal())
-                + "\n  TOTAL ESTIMADO:     " + Formato.pesos(c.total()));
+        new Ficha("Cotización " + s.getIdSolicitud())
+                .campo("Estado", s.getEstado().getEtiqueta())
+                .campo("Servicio", s.getTipoServicio().getEtiqueta())
+                .campo("Fecha", s.getFecha())
+                .campo("Ruta", s.getOrigen().municipio().getEtiqueta() + " → " + s.getDestino().municipio().getEtiqueta())
+                .campo("Distancia", c.distanciaKm() + " km aprox.")
+                .campo("Volumen", String.format("%.2f", s.getVolumenM3()) + " m³")
+                .campo("Vehículo sugerido", c.vehiculoSugerido().getEtiqueta())
+                .separador()
+                .campo("Tarifa base", Formato.pesos(c.tarifaBase()))
+                .campo("Recargo distancia", Formato.pesos(c.recargoDistancia()))
+                .campo("Pisos/complejidad", Formato.pesos(c.recargoPisos()))
+                .campo("Personal adicional", Formato.pesos(c.recargoPersonal()))
+                .separador()
+                .campo("TOTAL ESTIMADO", Formato.pesos(c.total()))
+                .imprimir();
     }
 }

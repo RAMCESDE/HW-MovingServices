@@ -19,7 +19,8 @@ import app.view.PicoPlacaView;
 import app.view.ProgramacionView;
 import app.view.ReservaView;
 import app.view.SeguimientoView;
-import app.view.helpers.EntradaConsola;
+import app.view.helpers.Menu;
+import app.view.helpers.Pantalla;
 
 import java.util.NoSuchElementException;
 
@@ -58,27 +59,29 @@ public class CliUserInterface {
     }
 
     public void applicationInit() {
-        System.out.println("Bienvenido a HW Moving Services");
+        Pantalla.titulo("HW MOVING SERVICES", "Mudanzas y acarreos");
+        Pantalla.info("Bienvenido.");
         try {
             menuInicial();
         } catch (NoSuchElementException e) {
-            System.out.println("\nEntrada finalizada.");
+            System.out.println();
+            Pantalla.aviso("Entrada finalizada.");
         }
-        System.out.println("Saliendo de la aplicación");
+        Pantalla.info("Gracias por usar HW Moving Services. ¡Hasta pronto!");
     }
 
     private void menuInicial() {
         while (true) {
-            int opcion = EntradaConsola.entero("""
-
-                    === INICIO ===
-                    1. Registrarme como cliente
-                    2. Iniciar sesión
-                    3. Verificar correo
-                    4. Olvidé mi contraseña
-                    5. Restablecer contraseña con token
-                    0. Salir
-                    Seleccione""");
+            int opcion = new Menu("MENÚ PRINCIPAL")
+                    .seccion("Ingresar")
+                    .opcion(1, "Registrarme como cliente")
+                    .opcion(2, "Iniciar sesión")
+                    .seccion("Mi cuenta")
+                    .opcion(3, "Verificar correo")
+                    .opcion(4, "Olvidé mi contraseña")
+                    .opcion(5, "Restablecer contraseña con token")
+                    .salida("Salir")
+                    .leer();
             switch (opcion) {
                 case 1 -> ejecutar(cuentaView::registrarCliente);
                 case 2 -> ejecutar(this::iniciarSesion);
@@ -88,7 +91,6 @@ public class CliUserInterface {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Seleccione una opción válida");
             }
         }
     }
@@ -105,22 +107,24 @@ public class CliUserInterface {
 
     private void menuCliente(Sesion s) {
         while (true) {
-            int opcion = EntradaConsola.entero("""
-
-                    === CLIENTE ===
-                    1. Ver mi perfil
-                    2. Editar mi perfil
-                    3. Solicitar cotización
-                    4. Ver mis cotizaciones
-                    5. Aceptar, rechazar o guardar una cotización
-                    6. Reservar y pagar anticipo
-                    7. Ver mis reservas
-                    8. Ver estado de mi mudanza
-                    9. Pagar saldo
-                    10. Ver recibo
-                    11. Calificar servicio
-                    0. Cerrar sesión
-                    Seleccione""");
+            int opcion = new Menu("MENÚ CLIENTE", s.email())
+                    .seccion("Mi perfil")
+                    .opcion(1, "Ver mi perfil")
+                    .opcion(2, "Editar mi perfil")
+                    .seccion("Cotizaciones")
+                    .opcion(3, "Solicitar cotización")
+                    .opcion(4, "Ver mis cotizaciones")
+                    .opcion(5, "Aceptar, rechazar o guardar una cotización")
+                    .seccion("Reservas")
+                    .opcion(6, "Reservar y pagar anticipo")
+                    .opcion(7, "Ver mis reservas")
+                    .opcion(8, "Ver estado de mi mudanza")
+                    .seccion("Pagos y calificación")
+                    .opcion(9, "Pagar saldo")
+                    .opcion(10, "Ver recibo")
+                    .opcion(11, "Calificar servicio")
+                    .salida("Cerrar sesión")
+                    .leer();
             switch (opcion) {
                 case 1 -> ejecutar(() -> clienteView.verPerfil(s));
                 case 2 -> ejecutar(() -> clienteView.editarPerfil(s));
@@ -136,7 +140,6 @@ public class CliUserInterface {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Seleccione una opción válida");
             }
         }
     }
@@ -144,29 +147,31 @@ public class CliUserInterface {
     private void menuAdministrador(Sesion s) {
         ejecutar(() -> documentoView.mostrarAlertas(s));
         while (true) {
-            int opcion = EntradaConsola.entero("""
-
-                    === ADMINISTRADOR ===
-                    1. Registrar vehículo
-                    2. Ver flota
-                    3. Asignar conductor a vehículo
-                    4. Retirar conductor de vehículo
-                    5. Actualizar documentos de vehículo
-                    6. Ver alertas de documentos
-                    7. Crear restricción de Pico y Placa
-                    8. Ver restricciones de Pico y Placa
-                    9. Eliminar restricción de Pico y Placa
-                    10. Consultar Pico y Placa de un vehículo
-                    11. Registrar empleado
-                    12. Ver empleados
-                    13. Cambiar estado de empleado
-                    14. Registrar anticipo en efectivo
-                    15. Programar servicio
-                    16. Ver agenda
-                    17. Consultar estado de un servicio
-                    18. Ver métricas de calidad
-                    0. Cerrar sesión
-                    Seleccione""");
+            int opcion = new Menu("MENÚ ADMINISTRADOR", s.email())
+                    .seccion("Flota")
+                    .opcion(1, "Registrar vehículo")
+                    .opcion(2, "Ver flota")
+                    .opcion(3, "Asignar conductor a vehículo")
+                    .opcion(4, "Retirar conductor de vehículo")
+                    .opcion(5, "Actualizar documentos de vehículo")
+                    .opcion(6, "Ver alertas de documentos")
+                    .seccion("Pico y Placa")
+                    .opcion(7, "Crear restricción")
+                    .opcion(8, "Ver restricciones")
+                    .opcion(9, "Eliminar restricción")
+                    .opcion(10, "Consultar un vehículo")
+                    .seccion("Personal")
+                    .opcion(11, "Registrar empleado")
+                    .opcion(12, "Ver empleados")
+                    .opcion(13, "Cambiar estado de empleado")
+                    .seccion("Operación")
+                    .opcion(14, "Registrar anticipo en efectivo")
+                    .opcion(15, "Programar servicio")
+                    .opcion(16, "Ver agenda")
+                    .opcion(17, "Consultar estado de un servicio")
+                    .opcion(18, "Ver métricas de calidad")
+                    .salida("Cerrar sesión")
+                    .leer();
             switch (opcion) {
                 case 1 -> ejecutar(() -> flotaView.registrar(s));
                 case 2 -> ejecutar(() -> flotaView.listar(s));
@@ -189,21 +194,18 @@ public class CliUserInterface {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Seleccione una opción válida");
             }
         }
     }
 
     private void menuConductor(Sesion s) {
         while (true) {
-            int opcion = EntradaConsola.entero("""
-
-                    === CONDUCTOR ===
-                    1. Ver mis servicios
-                    2. Registrar siguiente hito de ruta
-                    3. Registrar pago del saldo en efectivo
-                    0. Cerrar sesión
-                    Seleccione""");
+            int opcion = new Menu("MENÚ CONDUCTOR", s.email())
+                    .opcion(1, "Ver mis servicios")
+                    .opcion(2, "Registrar siguiente hito de ruta")
+                    .opcion(3, "Registrar pago del saldo en efectivo")
+                    .salida("Cerrar sesión")
+                    .leer();
             switch (opcion) {
                 case 1 -> ejecutar(() -> seguimientoView.misServicios(s));
                 case 2 -> ejecutar(() -> seguimientoView.avanzarHito(s));
@@ -211,25 +213,21 @@ public class CliUserInterface {
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Seleccione una opción válida");
             }
         }
     }
 
     private void menuAuxiliar(Sesion s) {
         while (true) {
-            int opcion = EntradaConsola.entero("""
-
-                    === AUXILIAR DE CARGA ===
-                    1. Ver mis servicios
-                    0. Cerrar sesión
-                    Seleccione""");
+            int opcion = new Menu("MENÚ AUXILIAR DE CARGA", s.email())
+                    .opcion(1, "Ver mis servicios")
+                    .salida("Cerrar sesión")
+                    .leer();
             switch (opcion) {
                 case 1 -> ejecutar(() -> seguimientoView.misServicios(s));
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Seleccione una opción válida");
             }
         }
     }
@@ -240,7 +238,7 @@ public class CliUserInterface {
             accion.run();
         } catch (DatoInvalidoException | ReglaNegocioException | RecursoNoEncontradoException
                  | AccesoDenegadoException | PagoRechazadoException | PersistenciaException e) {
-            System.out.println("No se pudo completar: " + e.getMessage());
+            Pantalla.error("No se pudo completar: " + e.getMessage());
         }
     }
 }
