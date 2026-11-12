@@ -1,5 +1,6 @@
 package app.domain;
 
+import app.domain.enums.CargoEmpleado;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -30,10 +31,10 @@ class EmpleadoTest {
     void setters_deCargoYTurno_actualizanLosValores() {
         Empleado empleado = new Empleado("EMP-003");
 
-        empleado.setCargo("Conductor");
+        empleado.setCargo(CargoEmpleado.CONDUCTOR);
         empleado.setTurno("Mañana");
 
-        assertEquals("Conductor", empleado.getCargo());
+        assertEquals(CargoEmpleado.CONDUCTOR, empleado.getCargo());
         assertEquals("Mañana", empleado.getTurno());
     }
 
