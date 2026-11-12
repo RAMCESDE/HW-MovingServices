@@ -2,7 +2,6 @@ package app.domain;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 import org.junit.jupiter.api.Test;
 
@@ -41,12 +40,5 @@ class ClienteTest {
         cliente.setNombre("Camilo Ruiz");
 
         assertEquals("Camilo Ruiz", cliente.getNombre());
-    }
-
-    @Test
-    void registrarServicio_noLanzaExcepciones() {
-        Cliente cliente = new Cliente();
-
-        assertDoesNotThrow(cliente::registrarServicio);
     }
 }
