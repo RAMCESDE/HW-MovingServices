@@ -1,44 +1,63 @@
 package app.domain;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
+import app.domain.enums.EstadoReserva;
+import app.domain.exceptions.ReglaNegocioException;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ReservaTest {
 
-    @Test
-    void constructorConArgumentos_asignaTodosLosCampos() {
-        Reserva reserva = new Reserva("RES-001", "2026-08-27", "2026-09-01", "Confirmada");
-
-        assertEquals("RES-001", reserva.getIdReserva());
-        assertEquals("2026-08-27", reserva.getFechaReserva());
-        assertEquals("2026-09-01", reserva.getFechaServicio());
-        assertEquals("Confirmada", reserva.getEstado());
+    private Reserva reserva(EstadoReserva estado) {
+        Reserva reserva = new Reserva();
+        reserva.setIdReserva("RES-001");
+        reserva.setEstado(estado);
+        reserva.setFechaServicio(LocalDateTime.of(2026, 11, 10, 9, 0));
+        reserva.setDuracionMinutos(120);
+        return reserva;
     }
 
     @Test
-    void constructorPorDefecto_dejaLosCamposEnNull() {
-        Reserva reserva = new Reserva();
+    void losHitosAvanzanEnOrdenHastaDestino() {
+        Reserva reserva = reserva(EstadoReserva.CONFIRMADO);
 
-        assertNull(reserva.getIdReserva());
-        assertNull(reserva.getFechaReserva());
-        assertNull(reserva.getFechaServicio());
-        assertNull(reserva.getEstado());
+        assertEquals(EstadoReserva.EN_DESPLAZAMIENTO, reserva.avanzarHito());
+        assertEquals(EstadoReserva.EN_ORIGEN, reserva.avanzarHito());
+        assertEquals(EstadoReserva.EN_DESTINO, reserva.avanzarHito());
+        assertThrows(ReglaNegocioException.class, reserva::avanzarHito);
     }
 
     @Test
-    void setters_actualizanLosValoresDeLosCampos() {
-        Reserva reserva = new Reserva();
+    void soloSeProgramaUnaReservaEnEstadoReservado() {
+        Reserva reserva = reserva(EstadoReserva.PENDIENTE_ANTICIPO);
 
-        reserva.setIdReserva("RES-002");
-        reserva.setFechaReserva("2026-08-28");
-        reserva.setFechaServicio("2026-09-05");
-        reserva.setEstado("Pendiente");
+        assertThrows(ReglaNegocioException.class, () -> reserva.programar(LocalDateTime.of(2026, 11, 10, 9, 0),
+                "ABC123", "EMP-1", List.of()));
+    }
 
-        assertEquals("RES-002", reserva.getIdReserva());
-        assertEquals("2026-08-28", reserva.getFechaReserva());
-        assertEquals("2026-09-05", reserva.getFechaServicio());
-        assertEquals("Pendiente", reserva.getEstado());
+    @Test
+    void soloFinalizaDesdeEnDestino() {
+        assertThrows(ReglaNegocioException.class, reserva(EstadoReserva.EN_ORIGEN)::finalizar);
+    }
+
+    @Test
+    void cadaEstadoSeTraduceALaEtapaDelCliente() {
+        assertEquals("Pendiente", EstadoReserva.CONFIRMADO.getEtapaCliente());
+        assertEquals("En Trayecto", EstadoReserva.EN_ORIGEN.getEtapaCliente());
+        assertEquals("Finalizada", EstadoReserva.FINALIZADO.getEtapaCliente());
+    }
+
+    @Test
+    void detectaTraslapesPeroNoServiciosContiguos() {
+        Reserva reserva = reserva(EstadoReserva.CONFIRMADO);
+
+        assertTrue(reserva.seTraslapaCon(LocalDateTime.of(2026, 11, 10, 10, 0), LocalDateTime.of(2026, 11, 10, 12, 0)));
+        assertFalse(reserva.seTraslapaCon(LocalDateTime.of(2026, 11, 10, 11, 0), LocalDateTime.of(2026, 11, 10, 13, 0)));
     }
 }

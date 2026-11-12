@@ -1,52 +1,40 @@
 package app.domain;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
+import app.domain.enums.EstadoSolicitud;
+import app.domain.exceptions.ReglaNegocioException;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class SolicitudServicioTest {
 
-    @Test
-    void constructorConArgumentos_asignaTodosLosCampos() {
-        SolicitudServicio solicitud = new SolicitudServicio("SOL-001", "Mudanza residencial", "Pendiente", "2026-08-27");
-
-        assertEquals("SOL-001", solicitud.getIdSolicitud());
-        assertEquals("Mudanza residencial", solicitud.getTipoServicio());
-        assertEquals("Pendiente", solicitud.getEstado());
-        assertEquals("2026-08-27", solicitud.getFecha());
+    private SolicitudServicio solicitud(EstadoSolicitud estado) {
+        SolicitudServicio solicitud = new SolicitudServicio();
+        solicitud.setIdSolicitud("SOL-001");
+        solicitud.setEstado(estado);
+        return solicitud;
     }
 
     @Test
-    void constructorPorDefecto_dejaLosCamposEnNull() {
-        SolicitudServicio solicitud = new SolicitudServicio();
+    void unBorradorSePuedeRetomarYAceptar() {
+        SolicitudServicio solicitud = solicitud(EstadoSolicitud.COTIZADA);
+        solicitud.guardarBorrador();
+        solicitud.aceptar();
 
-        assertNull(solicitud.getIdSolicitud());
-        assertNull(solicitud.getTipoServicio());
-        assertNull(solicitud.getEstado());
-        assertNull(solicitud.getFecha());
+        assertEquals(EstadoSolicitud.ACEPTADA, solicitud.getEstado());
     }
 
     @Test
-    void setters_actualizanLosValoresDeLosCampos() {
-        SolicitudServicio solicitud = new SolicitudServicio();
+    void unaCotizacionRechazadaNoSePuedeAceptar() {
+        SolicitudServicio solicitud = solicitud(EstadoSolicitud.COTIZADA);
+        solicitud.rechazar();
 
-        solicitud.setIdSolicitud("SOL-002");
-        solicitud.setTipoServicio("Mudanza corporativa");
-        solicitud.setEstado("En proceso");
-        solicitud.setFecha("2026-08-28");
-
-        assertEquals("SOL-002", solicitud.getIdSolicitud());
-        assertEquals("Mudanza corporativa", solicitud.getTipoServicio());
-        assertEquals("En proceso", solicitud.getEstado());
-        assertEquals("2026-08-28", solicitud.getFecha());
+        assertThrows(ReglaNegocioException.class, solicitud::aceptar);
     }
 
     @Test
-    void registrarSolicitud_noLanzaExcepciones() {
-        SolicitudServicio solicitud = new SolicitudServicio();
-
-        assertDoesNotThrow(solicitud::registrarSolicitud);
+    void soloSeReservaUnaCotizacionAceptada() {
+        assertThrows(ReglaNegocioException.class, solicitud(EstadoSolicitud.COTIZADA)::marcarReservada);
     }
 }
